@@ -16,7 +16,6 @@ exports.initLocals = function (req, res, next) {
 		{ label: 'Code of Conduct',	key: 'about',		href: '/about#CoC' },
 		{ label: 'Meetups',			key: 'meetups',		href: '/meetups' },
 		{ label: 'Members',			key: 'members',		href: '/members' },
-		{ label: 'Showbag',			key: 'showbag',		href: '/showbag' },
 	];
 
 	locals.user = req.user;
@@ -24,7 +23,7 @@ exports.initLocals = function (req, res, next) {
 	locals.basedir = keystone.get('basedir');
 
 	locals.page = {
-		title: 'SydJS',
+		title: 'PenangJS',
 		path: req.url.split('?')[0], // strip the query - handy for redirecting back to the page
 	};
 
