@@ -1,5 +1,6 @@
 var _ = require('lodash');
 var keystone = require('keystone');
+var Email = require('keystone-email');
 var moment = require('moment');
 var Types = keystone.Field.Types;
 
@@ -10,7 +11,7 @@ var Types = keystone.Field.Types;
 
 var Meetup = new keystone.List('Meetup', {
 	track: true,
-	autokey: { path: 'key', from: 'name', unique: true }
+	autokey: { path: 'key', from: 'name', unique: true },
 });
 
 Meetup.add({
@@ -41,23 +42,23 @@ Meetup.relationship({ ref: 'RSVP', refPath: 'meetup', path: 'rsvps' });
 // Virtuals
 // ------------------------------
 
-Meetup.schema.virtual('url').get(function() {
+Meetup.schema.virtual('url').get(function () {
 	return '/meetups/' + this.key;
 });
 
-Meetup.schema.virtual('remainingRSVPs').get(function() {
+Meetup.schema.virtual('remainingRSVPs').get(function () {
 	if (!this.maxRSVPs) return -1;
 	return Math.max(this.maxRSVPs - (this.totalRSVPs || 0), 0);
 });
 
-Meetup.schema.virtual('rsvpsAvailable').get(function() {
+Meetup.schema.virtual('rsvpsAvailable').get(function () {
 	return (this.remainingRSVPs > 0);
 });
 
 // Pre Save
 // ------------------------------
 
-Meetup.schema.pre('save', function(next) {
+Meetup.schema.pre('save', function (next) {
 	var meetup = this;
 	// no published date, it's a draft meetup
 	if (!meetup.publishedDate) {
@@ -81,45 +82,48 @@ Meetup.schema.pre('save', function(next) {
 // Methods
 // ------------------------------
 
-Meetup.schema.methods.refreshRSVPs = function(callback) {
+Meetup.schema.methods.refreshRSVPs = function (callback) {
 	var meetup = this;
 	keystone.list('RSVP').model.count()
 		.where('meetup').in([meetup.id])
 		.where('attending', true)
-		.exec(function(err, count) {
+		.exec(function (err, count) {
 			if (err) return callback(err);
 			meetup.totalRSVPs = count;
 			meetup.save(callback);
 		});
-}
+};
 
-Meetup.schema.methods.notifyAttendees = function(req, res, next) {
+Meetup.schema.methods.notifyAttendees = function (req, res, next) {
 	var meetup = this;
-	keystone.list('User').model.find().where('notifications.meetups', true).exec(function(err, attendees) {
+	keystone.list('User').model.find().where('notifications.meetups', true).exec(function (err, attendees) {
 		if (err) return next(err);
 		if (!attendees.length) {
 			next();
 		} else {
-			attendees.forEach(function(attendee) {
-				new keystone.Email('new-meetup').send({
+			attendees.forEach(function (attendee) {
+				new Email('templates/emails/new-meetup', {
+					transport: 'mailgun',
+				}).send({
 					attendee: attendee,
 					meetup: meetup,
 					subject: 'New meetup: ' + meetup.name,
+				}, {
 					to: attendee.email,
 					from: {
 						name: 'PenangJS',
-						email: 'hello@javascript.my'
-					}
+						email: 'hello@javascript.my',
+					},
 				}, next);
 			});
 		}
 	});
-}
+};
 
 Meetup.schema.set('toJSON', {
-	transform: function(doc, rtn, options) {
+	transform: function (doc, rtn, options) {
 		return _.pick(doc, '_id', 'name', 'startDate', 'endDate', 'place', 'map', 'description', 'rsvpsAvailable', 'remainingRSVPs');
-	}
+	},
 });
 
 

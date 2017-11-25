@@ -1,5 +1,6 @@
 var async = require('async');
 var keystone = require('keystone');
+var Email = require('keystone-email');
 var Types = keystone.Field.Types;
 
 /**
@@ -10,7 +11,7 @@ var Types = keystone.Field.Types;
 var Post = new keystone.List('Post', {
 	map: { name: 'title' },
 	track: true,
-	autokey: { path: 'slug', from: 'title', unique: true }
+	autokey: { path: 'slug', from: 'title', unique: true },
 });
 
 Post.add({
@@ -21,9 +22,9 @@ Post.add({
 	image: { type: Types.CloudinaryImage },
 	content: {
 		brief: { type: Types.Html, wysiwyg: true, height: 150 },
-		extended: { type: Types.Html, wysiwyg: true, height: 400 }
+		extended: { type: Types.Html, wysiwyg: true, height: 400 },
 	},
-	categories: { type: Types.Relationship, ref: 'PostCategory', many: true }
+	categories: { type: Types.Relationship, ref: 'PostCategory', many: true },
 });
 
 /**
@@ -31,7 +32,7 @@ Post.add({
  * ========
  */
 
-Post.schema.virtual('content.full').get(function() {
+Post.schema.virtual('content.full').get(function () {
 	return this.content.extended || this.content.brief;
 });
 
@@ -49,36 +50,38 @@ Post.relationship({ ref: 'PostComment', refPath: 'post', path: 'comments' });
  * =============
  */
 
-Post.schema.methods.notifyAdmins = function(callback) {
+Post.schema.methods.notifyAdmins = function (callback) {
 	var post = this;
 	// Method to send the notification email after data has been loaded
-	var sendEmail = function(err, results) {
+	var sendEmail = function (err, results) {
 		if (err) return callback(err);
-		async.each(results.admins, function(admin, done) {
-			new keystone.Email('admin-notification-new-post').send({
+		async.each(results.admins, function (admin, done) {
+			new Email('templates/emails/admin-notification-new-post', {
+				transport: 'mailgun',
+			}).send({
 				admin: admin.name.first || admin.name.full,
 				author: results.author ? results.author.name.full : 'Somebody',
 				title: post.title,
 				keystoneURL: 'http://www.javascript.my/keystone/post/' + post.id,
-				subject: 'New Post to PenangJS'
+				subject: 'New Post to PenangJS',
 			}, {
 				to: admin,
 				from: {
 					name: 'PenangJS',
-					email: 'contact@javascript.my'
-				}
+					email: 'contact@javascript.my',
+				},
 			}, done);
 		}, callback);
-	}
+	};
 	// Query data in parallel
 	async.parallel({
-		author: function(next) {
+		author: function (next) {
 			if (!post.author) return next();
 			keystone.list('User').model.findById(post.author).exec(next);
 		},
-		admins: function(next) {
-			keystone.list('User').model.find().where('isAdmin', true).exec(next)
-		}
+		admins: function (next) {
+			keystone.list('User').model.find().where('isAdmin', true).exec(next);
+		},
 	}, sendEmail);
 };
 
