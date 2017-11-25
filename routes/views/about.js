@@ -9,7 +9,7 @@ exports = module.exports = function(req, res) {
 	locals.page.title = 'About PenangJS';
 
 	locals.organisers = [
-		{ name: 'CY Lim', image: '/images/organisers/cy_400_round.png', twitter: 'cylim226', title: 'Founder, MC, Coordinator', profile: '/member/cy' }
+		{ name: 'CY Lim', image: '/images/organisers/cy_400_round.png', twitter: 'cylim226', title: 'Coordinator', profile: '/member/cy' },
 	]
 
 	view.render('site/about');

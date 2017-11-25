@@ -10,7 +10,7 @@ var meetup = {};
 var rsvp = {};
 var attendees = [];
 
-var REFRESH_INTERVAL = 5000; // 5 seconds
+var REFRESH_INTERVAL = 10000; // 10 seconds
 
 var refreshTimeout = null;
 function cancelRefresh() {
@@ -39,7 +39,7 @@ RSVPStore.extend({
 		request
 			.post('/api/me/meetup')
 			.send({ data: {
-				meetup: SydJS.currentMeetupId,
+				meetup: PenangJS.currentMeetupId,
 				attending: attending
 			}})
 			.end(function(err, res) {
@@ -66,7 +66,7 @@ RSVPStore.extend({
 		// request the update from the API
 		busy = true;
 		request
-			.get('/api/meetup/' + SydJS.currentMeetupId)
+			.get('/api/meetup/' + PenangJS.currentMeetupId)
 			.end(function(err, res) {
 				if (err) {
 					console.log('Error with the AJAX request: ', err)
