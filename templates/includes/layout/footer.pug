@@ -27,8 +27,9 @@ footer.site-footer.site-footer--sticky: .container
 					h5.footer-heading Sponsors
 					ul: each sponsor in sponsors
 						li 
-							a(href= sponsor.website, rel='external')= sponsor.name 
-							i
+							a(href= sponsor.website, rel='external')= sponsor.name
+							if sponsor.isHiring
+								span  (hiring)
 	.row.footer-copyright
 		p Copyright &copy; 2016 SydJS. Powered by <a href='http://keystonejs.com' rel='external'>KeystoneJS</a>.
 		p If you run a meetup, please feel free to clone our site and make your own! You can <a href="https://github.com/JedWatson/sydjs-site" rel='external'>find it on GitHub</a>.

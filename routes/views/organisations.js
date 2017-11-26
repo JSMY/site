@@ -9,7 +9,7 @@ exports = module.exports = function(req, res) {
 	
 	// locals.section = 'members';
 	
-	view.query('organisations', Organisation.model.find().sort('name'), 'members');
+	view.query('organisations', Organisation.model.find().sort('createdAt'), 'members');
 	
 	view.render('site/organisations');
 	

@@ -16,8 +16,9 @@ Organisation.add({
 	logo: { type: Types.CloudinaryImage },
 	website: Types.Url,
 	isHiring: Boolean,
+	isSponsor: Types.Boolean,
 	description: { type: Types.Markdown },
-	location: Types.Location
+	location: Types.Location,
 });
 
 

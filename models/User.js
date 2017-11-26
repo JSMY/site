@@ -1,7 +1,6 @@
 var async = require('async');
 var crypto = require('crypto');
 var keystone = require('keystone');
-var Email = require('keystone-email');
 var Types = keystone.Field.Types;
 
 /**
@@ -201,10 +200,9 @@ User.schema.virtual('githubUsername').get(function () {
 User.schema.methods.resetPassword = function (callback) {
 	var user = this;
 	user.resetPasswordKey = keystone.utils.randomString([16, 24]);
-	console.log(user.email)
 	user.save(function (err) {
 		if (err) return callback(err);
-		new Email('templates/emails/forgotten-password.pug', {
+		new keystone.Email('forgotten-password.pug', {
 			transport: 'mailgun',
 		}).send({
 			user: user,

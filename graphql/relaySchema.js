@@ -249,6 +249,7 @@ var organisationType = new GraphQLObjectType({
 		logo: { type: keystoneTypes.cloudinaryImage },
 		website: { type: GraphQLString },
 		isHiring: { type: GraphQLBoolean },
+		isSponsor: { type: GraphQLBoolean },
 		description: { type: keystoneTypes.markdown },
 		location: { type: keystoneTypes.location },
 		members: {

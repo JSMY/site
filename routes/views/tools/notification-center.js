@@ -1,6 +1,5 @@
 var keystone = require('keystone'),
 	async = require('async');
-var Email = require('keystone-email');
 
 var Meetup = keystone.list('Meetup'),
 	User = keystone.list('User');
@@ -81,7 +80,7 @@ exports = module.exports = function (req, res) {
 			return next();
 		} else {
 			async.each(locals.subscribers, function (subscriber, doneSubscriber) {
-				new Email('templates/emails/member-notification', {
+				new keystone.Email('member-notification.pug', {
 					transport: 'mailgun',
 				}).send({
 					subscriber: subscriber,

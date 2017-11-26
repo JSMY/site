@@ -67,14 +67,14 @@ keystone.set('locals', {
 	ga_domain: keystone.get('ga domain'),
 });
 
-keystone.set('email locals', {
-	utils: keystone.utils,
-	host: (function () {
-		// if (keystone.get('env') === 'staging') return 'http://sydjs-beta.herokuapp.com';
-		if (keystone.get('env') === 'production') return 'http://www.javascript.my';
-		return (keystone.get('host') || 'http://localhost:') + (keystone.get('port') || '3000');
-	})(),
-});
+// keystone.set('email locals', {
+// 	utils: keystone.utils,
+// 	host: (function () {
+// 		// if (keystone.get('env') === 'staging') return 'http://sydjs-beta.herokuapp.com';
+// 		if (keystone.get('env') === 'production') return 'http://www.javascript.my';
+// 		return (keystone.get('host') || 'http://localhost:') + (keystone.get('port') || '3000');
+// 	})(),
+// });
 
 // Load your project's Routes
 keystone.set('routes', require('./routes'));
