@@ -53,23 +53,24 @@ exports = module.exports = function (req, res) {
 
 	// Notify next meetup attendees
 
-	view.on('post', { action: 'notify.attendee' }, function (next) {
-		if (!locals.nextMeetup) {
-			req.flash('warning', 'There isn\'t a "next" meetup at the moment');
-			return next();
-		} else {
-			locals.nextMeetup.notifyAttendees(req, res, function (err) {
-				if (err) {
-					req.flash('error', 'There was an error sending the notifications, please check the logs for more info.');
-					console.error('===== Failed to send meetup notification emails =====');
-					console.error(err);
-				} else {
-					req.flash('success', 'Notification sent to ' + keystone.utils.plural(locals.nextMeetup.rsvps.length, '* attendee'));
-				}
-				next();
-			});
-		}
-	});
+	// view.on('post', { action: 'notify.attendee' }, function (next) {
+	// 	if (!locals.nextMeetup) {
+	// 		req.flash('warning', 'There isn\'t a "next" meetup at the moment');
+	// 		return next();
+	// 	} else {
+	// 		// locals.nextMeetup.notifyAttendees(req, res, function (err) {
+	// 		// 	if (err) {
+	// 		// 		req.flash('error', 'There was an error sending the notifications, please check the logs for more info.');
+	// 		// 		console.error('===== Failed to send meetup notification emails =====');
+	// 		// 		console.error(err);
+	// 		// 	} else {
+	// 		// 		req.flash('success', 'Notification sent to ' + keystone.utils.plural(locals.nextMeetup.rsvps.length, '* attendee'));
+	// 		// 	}
+	// 		// 	next();
+	// 		// });
+	// 		return next();
+	// 	}
+	// });
 
 
 	// Notify all PenangJS subscribers
@@ -80,7 +81,8 @@ exports = module.exports = function (req, res) {
 			return next();
 		} else {
 			async.each(locals.subscribers, function (subscriber, doneSubscriber) {
-				new keystone.Email('member-notification.pug', {
+				new keystone.Email({
+					templateName: 'member-notification.pug',
 					transport: 'mailgun',
 				}).send({
 					subscriber: subscriber,

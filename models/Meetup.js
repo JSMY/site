@@ -93,31 +93,32 @@ Meetup.schema.methods.refreshRSVPs = function (callback) {
 		});
 };
 
-Meetup.schema.methods.notifyAttendees = function (req, res, next) {
-	var meetup = this;
-	keystone.list('User').model.find().where('notifications.meetups', true).exec(function (err, attendees) {
-		if (err) return next(err);
-		if (!attendees.length) {
-			next();
-		} else {
-			attendees.forEach(function (attendee) {
-				new keystone.Email('new-meetup.pug', {
-					transport: 'mailgun',
-				}).send({
-					attendee: attendee,
-					meetup: meetup,
-					subject: 'New meetup: ' + meetup.name,
-				}, {
-					to: attendee.email,
-					from: {
-						name: 'PenangJS',
-						email: 'hello@javascript.my',
-					},
-				}, next);
-			});
-		}
-	});
-};
+// Meetup.schema.methods.notifyAttendees = function (req, res, next) {
+// 	var meetup = this;
+// 	keystone.list('User').model.find().where('notifications.meetups', true).exec(function (err, attendees) {
+// 		if (err) return next(err);
+// 		if (!attendees.length) {
+// 			next();
+// 		} else {
+// 			attendees.forEach(function (attendee) {
+// 				new keystone.Email({
+// 					templateName: 'new-meetup.pug',
+// 					transport: 'mailgun',
+// 				}).send({
+// 					attendee: attendee,
+// 					meetup: meetup,
+// 					subject: 'New meetup: ' + meetup.name,
+// 				}, {
+// 					to: attendee.email,
+// 					from: {
+// 						name: 'PenangJS',
+// 						email: 'hello@javascript.my',
+// 					},
+// 				}, next);
+// 			});
+// 		}
+// 	});
+// };
 
 Meetup.schema.set('toJSON', {
 	transform: function (doc, rtn, options) {

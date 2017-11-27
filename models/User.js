@@ -202,9 +202,12 @@ User.schema.methods.resetPassword = function (callback) {
 	user.resetPasswordKey = keystone.utils.randomString([16, 24]);
 	user.save(function (err) {
 		if (err) return callback(err);
-		new keystone.Email('forgotten-password.pug', {
+
+		const emailOptions = {
+			templateName: 'forgotten-password.pug',
 			transport: 'mailgun',
-		}).send({
+		};
+		new keystone.Email(emailOptions).send({
 			user: user,
 			link: '/reset-password/' + user.resetPasswordKey,
 		}, {

@@ -49,40 +49,41 @@ Post.relationship({ ref: 'PostComment', refPath: 'post', path: 'comments' });
  * =============
  */
 
-Post.schema.methods.notifyAdmins = function (callback) {
-	var post = this;
-	// Method to send the notification email after data has been loaded
-	var sendEmail = function (err, results) {
-		if (err) return callback(err);
-		async.each(results.admins, function (admin, done) {
-			new keystone.Email('admin-notification-new-post.pug', {
-				transport: 'mailgun',
-			}).send({
-				admin: admin.name.first || admin.name.full,
-				author: results.author ? results.author.name.full : 'Somebody',
-				title: post.title,
-				keystoneURL: 'http://www.javascript.my/keystone/post/' + post.id,
-				subject: 'New Post to PenangJS',
-			}, {
-				to: admin,
-				from: {
-					name: 'PenangJS',
-					email: 'contact@javascript.my',
-				},
-			}, done);
-		}, callback);
-	};
-	// Query data in parallel
-	async.parallel({
-		author: function (next) {
-			if (!post.author) return next();
-			keystone.list('User').model.findById(post.author).exec(next);
-		},
-		admins: function (next) {
-			keystone.list('User').model.find().where('isAdmin', true).exec(next);
-		},
-	}, sendEmail);
-};
+// Post.schema.methods.notifyAdmins = function (callback) {
+// 	var post = this;
+// 	// Method to send the notification email after data has been loaded
+// 	var sendEmail = function (err, results) {
+// 		if (err) return callback(err);
+// 		async.each(results.admins, function (admin, done) {
+// 			new keystone.Email({
+// 				templateName: 'admin-notification-new-post.pug',
+// 				transport: 'mailgun',
+// 			}).send({
+// 				admin: admin.name.first || admin.name.full,
+// 				author: results.author ? results.author.name.full : 'Somebody',
+// 				title: post.title,
+// 				keystoneURL: 'http://www.javascript.my/keystone/post/' + post.id,
+// 				subject: 'New Post to PenangJS',
+// 			}, {
+// 				to: admin,
+// 				from: {
+// 					name: 'PenangJS',
+// 					email: 'contact@javascript.my',
+// 				},
+// 			}, done);
+// 		}, callback);
+// 	};
+// 	// Query data in parallel
+// 	async.parallel({
+// 		author: function (next) {
+// 			if (!post.author) return next();
+// 			keystone.list('User').model.findById(post.author).exec(next);
+// 		},
+// 		admins: function (next) {
+// 			keystone.list('User').model.find().where('isAdmin', true).exec(next);
+// 		},
+// 	}, sendEmail);
+// };
 
 
 /**
